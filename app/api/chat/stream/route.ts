@@ -20,11 +20,24 @@ export async function POST(request: Request) {
     async start(controller) {
       let text = "";
       let mode = "openai";
+      let reason: string | null = null;
 
       try {
         text = await generateChatReply(body.input, session.mindState, body.history ?? []);
       } catch (error) {
         console.error("api/chat/stream error", error);
+        const errorCode =
+          typeof error === "object" && error && "code" in error ? String(error.code) : undefined;
+        const errorStatus =
+          typeof error === "object" && error && "status" in error ? String(error.status) : undefined;
+
+        reason =
+          errorCode === "insufficient_quota" || errorStatus === "429"
+            ? "OpenAI project quota is unavailable"
+            : error instanceof Error
+              ? error.message
+              : "Unknown AI provider error";
+
         text = `${createMockReply(body.input, session.mindState, body.history ?? [])}\n\n[ระบบใช้คำตอบสำรองชั่วคราว เพราะบริการ AI ภายนอกยังไม่พร้อม]`;
         mode = "mock-fallback";
       }
@@ -36,7 +49,7 @@ export async function POST(request: Request) {
         await new Promise((resolve) => setTimeout(resolve, 35));
       }
 
-      controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done", mode })}\n`));
+      controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done", mode, reason })}\n`));
       controller.close();
     },
   });

@@ -21,6 +21,12 @@ export const sourcesConfig = {
       type: "remote",
     },
     {
+      id: "x-academic-search",
+      label: "X Academic / API search",
+      enabled: false,
+      type: "remote",
+    },
+    {
       id: "mock-public-summaries",
       label: "Mock public summaries",
       enabled: true,

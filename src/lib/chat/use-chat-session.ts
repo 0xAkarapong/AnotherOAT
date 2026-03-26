@@ -33,6 +33,7 @@ export function useChatSession({
     "idle" | "loading" | "typing" | "error" | "timeout" | "success"
   >("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -65,9 +66,18 @@ export function useChatSession({
   }, []);
 
   const banner = useMemo(() => {
-    if (status === "loading") return { kind: "loading" as const, label: "กำลังเชื่อมต่อเซสชัน..." };
-    if (status === "typing") return { kind: "loading" as const, label: "another oat กำลังเรียบเรียงคำตอบแบบสตรีม..." };
-    if (status === "success") return { kind: "success" as const, label: "พร้อมสนทนาแล้ว ข้อความล่าสุดถูกบันทึกในเครื่องนี้" };
+    if (status === "loading") {
+      return { kind: "loading" as const, label: "กำลังเชื่อมต่อเซสชัน..." };
+    }
+    if (status === "typing") {
+      return { kind: "loading" as const, label: "another oat กำลังเรียบเรียงคำตอบแบบสตรีม..." };
+    }
+    if (status === "success") {
+      return {
+        kind: "success" as const,
+        label: "พร้อมสนทนาแล้ว ข้อความล่าสุดถูกบันทึกในเครื่องนี้",
+      };
+    }
     if (status === "timeout") {
       return {
         kind: "error" as const,
@@ -82,8 +92,14 @@ export function useChatSession({
         onRetry: lastUserMessageRef.current ? () => void sendMessage(lastUserMessageRef.current!) : undefined,
       };
     }
+    if (providerNotice) {
+      return {
+        kind: "error" as const,
+        label: providerNotice,
+      };
+    }
     return { kind: "idle" as const };
-  }, [errorMessage, status]);
+  }, [errorMessage, providerNotice, status]);
 
   async function refreshSession() {
     setIsRefreshing(true);
@@ -96,6 +112,7 @@ export function useChatSession({
 
       const payload = (await response.json()) as { session: SessionState };
       setSession(payload.session);
+      setProviderNotice(null);
       setStatus("success");
       router.refresh();
       setTimeout(() => setStatus("idle"), 2200);
@@ -126,6 +143,7 @@ export function useChatSession({
     });
     setInput("");
     setErrorMessage(null);
+    setProviderNotice(null);
     setStatus("typing");
 
     timeoutRef.current = setTimeout(() => {
@@ -163,7 +181,7 @@ export function useChatSession({
           if (!part.trim()) continue;
           const event = JSON.parse(part) as
             | { type: "chunk"; text: string }
-            | { type: "done"; mode: string }
+            | { type: "done"; mode: string; reason?: string | null }
             | { type: "error"; message: string };
 
           if (event.type === "chunk") {
@@ -175,6 +193,14 @@ export function useChatSession({
                     content: accumulated,
                   }
                 : null,
+            );
+          }
+
+          if (event.type === "done" && event.mode === "mock-fallback") {
+            setProviderNotice(
+              event.reason === "OpenAI project quota is unavailable"
+                ? "OpenAI key ติดต่อได้ แต่ project นี้ยังไม่มี quota เพียงพอ จึงใช้คำตอบสำรองชั่วคราว"
+                : "ระบบสลับไปใช้คำตอบสำรอง เพราะบริการ AI ภายนอกยังไม่พร้อม",
             );
           }
 
