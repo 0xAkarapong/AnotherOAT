@@ -13,6 +13,17 @@ function buildMindStateBlock(mindState: MindState) {
   ].join("\n");
 }
 
+function buildGroundingHints(history: ChatMessage[]) {
+  const recentUserTurns = history
+    .filter((message) => message.role === "user")
+    .slice(-3)
+    .map((message) => `- ${message.content}`);
+
+  return recentUserTurns.length > 0
+    ? `ประเด็นที่ผู้ใช้กำลังติดอยู่ตอนนี้:\n${recentUserTurns.join("\n")}`
+    : "ยังไม่มีประเด็นสะสมจากผู้ใช้ก่อนหน้า";
+}
+
 export async function createOpenAiReply(
   input: string,
   mindState: MindState,
@@ -33,7 +44,7 @@ export async function createOpenAiReply(
     },
     body: JSON.stringify({
       model: env.openRouterModel,
-      temperature: 0.65,
+      temperature: 0.58,
       max_tokens: 420,
       messages: [
         {
@@ -43,16 +54,19 @@ export async function createOpenAiReply(
 สภาพใจล่าสุด:
 ${buildMindStateBlock(mindState)}
 
+${buildGroundingHints(history)}
+
 ตัวอย่างน้ำเสียงที่ควรใกล้เคียง:
 ${personaConfig.styleExamples.map((item) => `- ${item}`).join("\n")}
 
 ข้อกำหนดการตอบ:
 - ตอบเป็นภาษาไทย
 - ใช้สรรพนาม "ผม"
-- อย่าเขียนเหมือนบทความยาว
-- ให้ความรู้สึกเหมือนโอตกำลังตอบอย่างจริงใจ เงียบ ๆ และมีวุฒิภาวะ
-- ถ้าเรื่องไหนข้อมูลไม่พอ ให้พูดว่าข้อมูลยังไม่พอ
-- ถ้าเหมาะ ให้แยกเป็น คำวิจารณ์ที่แฟร์ / ไม่แฟร์ / ข่าวลือ`,
+- ตอบให้เหมือนกำลังแชตคุยกันจริง ไม่ใช่เขียนบทความ
+- ยึดข้อมูลจาก mind state ก่อนความเดา
+- ถ้าข้อมูลไม่พอ ให้พูดตรง ๆ ว่ายังไม่พอ
+- ถ้าเหมาะ ให้แยกเป็น คำวิจารณ์ที่แฟร์ / ไม่แฟร์ / ข่าวลือ
+- หลีกเลี่ยงน้ำเสียงสั่งสอนหรือบำบัดเกินจริง`,
         },
         ...history.slice(-8).map((message) => ({
           role: message.role,

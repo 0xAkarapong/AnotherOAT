@@ -28,6 +28,16 @@ function filterByRange(item: MentionItem, rangeDays?: number | null) {
   return Date.now() - Date.parse(item.publishedAt) <= ms;
 }
 
+function filterByYearWindow(item: MentionItem, startYear?: number, endYear?: number) {
+  if (!startYear && !endYear) return true;
+
+  const year = new Date(item.publishedAt).getUTCFullYear();
+  if (Number.isNaN(year)) return false;
+  if (startYear && year < startYear) return false;
+  if (endYear && year > endYear) return false;
+  return true;
+}
+
 export async function fetchSessionMentions(
   emit?: (event: MentionProviderProgress) => void,
   options?: SessionStartOptions,
@@ -54,6 +64,7 @@ export async function fetchSessionMentions(
       const normalized = normalizeMention(item);
       if (!isRelevantToOat(normalized)) continue;
       if (!filterByRange(normalized, options?.rangeDays)) continue;
+      if (!filterByYearWindow(normalized, options?.startYear, options?.endYear)) continue;
 
       const key = normalized.url || normalized.id;
       if (!deduped.has(key)) {

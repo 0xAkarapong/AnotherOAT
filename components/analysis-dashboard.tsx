@@ -1,6 +1,14 @@
-import { AlertTriangle, BarChart3, Database, LineChart, ShieldAlert, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  Database,
+  LineChart,
+  ShieldAlert,
+  Sparkles,
+} from "lucide-react";
 
 import { Panel } from "@/components/ui/panel";
+import { siteConfig } from "@/src/config/site";
 import { sourcesConfig } from "@/src/config/sources";
 import { formatDateLabel } from "@/src/lib/utils";
 import type { MentionItem, SessionState } from "@/src/lib/types";
@@ -15,13 +23,15 @@ export function AnalysisDashboard({ session }: { session: SessionState }) {
       <Panel className="p-5 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-white/45">Internet Data Analysis</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-white/45">
+              Internet Data Analysis
+            </p>
             <h1 className="mt-2 font-serif text-3xl text-white sm:text-4xl">
-              หน้าแยกสำหรับดู dataset และสัญญาณวิเคราะห์จากอินเทอร์เน็ต
+              หน้าวิเคราะห์ dataset และสัญญาณจากอินเทอร์เน็ต
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-white/64">
-              ใช้ดูว่าระบบดึงข้อมูลอะไรเข้ามา จำนวนเท่าไร กระจุกอยู่ช่วงเวลาไหน มีน้ำหนักเชิงลบแค่ไหน
-              และสรุปออกมาเป็น valid criticism, invalid attacks, rumors, และ growth signals อย่างไร
+              ใช้ดูว่าระบบดึงข้อมูลอะไรเข้ามา จำนวนเท่าไร กระจุกอยู่ในช่วงอายุไหนของโอต มีน้ำหนักเชิงลบแค่ไหน
+              และสรุปออกมาเป็นคำวิจารณ์ที่แฟร์ การโจมตี ข่าวลือ และสัญญาณการเติบโตอย่างไร
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-black/15 px-4 py-3 text-sm text-white/62 dark:bg-black/25">
@@ -33,15 +43,23 @@ export function AnalysisDashboard({ session }: { session: SessionState }) {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Metric icon={Database} label="Items in dataset" value={`${mentions.length}`} />
         <Metric icon={BarChart3} label="Average negativity" value={avgNegativity.toFixed(2)} />
-        <Metric icon={Sparkles} label="Providers enabled" value={`${sourcesConfig.providerList.filter((item) => item.enabled).length}`} />
-        <Metric icon={LineChart} label="Mind state" value={emotionLabel(session.mindState.emotionalWeight)} />
+        <Metric
+          icon={Sparkles}
+          label="Providers enabled"
+          value={`${sourcesConfig.providerList.filter((item) => item.enabled).length}`}
+        />
+        <Metric
+          icon={LineChart}
+          label="Mind state"
+          value={emotionLabel(session.mindState.emotionalWeight)}
+        />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-3">
         <ChartCard title="Negativity distribution">
           <BarRows rows={buildNegativityBins(mentions)} />
         </ChartCard>
-        <ChartCard title="Timeline density">
+        <ChartCard title="Timeline density by age">
           <BarRows rows={buildTimelineBins(mentions)} />
         </ChartCard>
         <ChartCard title="Source distribution">
@@ -54,7 +72,7 @@ export function AnalysisDashboard({ session }: { session: SessionState }) {
           icon={Sparkles}
           title="Valid criticism"
           items={session.mindState.fairCriticism}
-          empty="ยังไม่มี valid criticism เด่นพอ"
+          empty="ยังไม่มี valid criticism ที่เด่นพอ"
         />
         <SignalCard
           icon={ShieldAlert}
@@ -88,6 +106,7 @@ export function AnalysisDashboard({ session }: { session: SessionState }) {
                 <th className="px-5 py-3 font-medium sm:px-6">Source</th>
                 <th className="px-5 py-3 font-medium">Title</th>
                 <th className="px-5 py-3 font-medium">Date</th>
+                <th className="px-5 py-3 font-medium">Age</th>
                 <th className="px-5 py-3 font-medium">Negativity</th>
                 <th className="px-5 py-3 font-medium">Tags</th>
               </tr>
@@ -103,6 +122,7 @@ export function AnalysisDashboard({ session }: { session: SessionState }) {
                     <p className="mt-1 max-w-2xl text-xs leading-6 text-white/45">{mention.snippet}</p>
                   </td>
                   <td className="px-5 py-4 text-white/52">{formatDateLabel(mention.publishedAt)}</td>
+                  <td className="px-5 py-4 text-white/52">{formatAgeLabel(mention.publishedAt)}</td>
                   <td className="px-5 py-4 text-white/68">{mention.negativityScore.toFixed(2)}</td>
                   <td className="px-5 py-4">
                     <div className="flex flex-wrap gap-2">
@@ -202,7 +222,7 @@ function BarRows({ rows }: { rows: Array<{ label: string; value: number }> }) {
     <div className="space-y-3">
       {rows.map((row) => (
         <div key={row.label}>
-          <div className="mb-1 flex items-center justify-between text-xs text-white/48">
+          <div className="mb-1 flex items-center justify-between gap-3 text-xs text-white/48">
             <span className="truncate pr-3">{row.label}</span>
             <span>{row.value}</span>
           </div>
@@ -236,16 +256,22 @@ function buildNegativityBins(mentions: MentionItem[]) {
 }
 
 function buildTimelineBins(mentions: MentionItem[]) {
-  const buckets = new Map<string, number>();
+  const buckets = new Map<number, number>();
+  const birthYear = new Date(siteConfig.birthDate).getUTCFullYear();
+
   for (const mention of mentions) {
-    const date = new Date(mention.publishedAt);
-    const label = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
-    buckets.set(label, (buckets.get(label) ?? 0) + 1);
+    const year = new Date(mention.publishedAt).getUTCFullYear();
+    if (Number.isNaN(year)) continue;
+    buckets.set(year, (buckets.get(year) ?? 0) + 1);
   }
+
   return [...buckets.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .slice(-8)
-    .map(([label, value]) => ({ label, value }));
+    .sort((a, b) => a[0] - b[0])
+    .slice(-10)
+    .map(([year, value]) => ({
+      label: `อายุ ${year - birthYear} · ${year}`,
+      value,
+    }));
 }
 
 function buildSourceDistribution(mentions: MentionItem[]) {
@@ -257,6 +283,12 @@ function buildSourceDistribution(mentions: MentionItem[]) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([label, value]) => ({ label, value }));
+}
+
+function formatAgeLabel(dateString: string) {
+  const year = new Date(dateString).getUTCFullYear();
+  const birthYear = new Date(siteConfig.birthDate).getUTCFullYear();
+  return `อายุ ${year - birthYear}`;
 }
 
 function emotionLabel(value: SessionState["mindState"]["emotionalWeight"]) {

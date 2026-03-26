@@ -30,6 +30,8 @@ export type SessionState = {
 export type SessionStartOptions = {
   maxItems?: number;
   rangeDays?: number | null;
+  startYear?: number;
+  endYear?: number;
 };
 
 export type SessionProgressEvent = {

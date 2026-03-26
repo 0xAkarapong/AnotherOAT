@@ -9,6 +9,12 @@ export async function GET(request: Request) {
     rangeDays: searchParams.get("rangeDays")
       ? Number(searchParams.get("rangeDays"))
       : undefined,
+    startYear: searchParams.get("startYear")
+      ? Number(searchParams.get("startYear"))
+      : undefined,
+    endYear: searchParams.get("endYear")
+      ? Number(searchParams.get("endYear"))
+      : undefined,
   };
 
   const stream = new ReadableStream({

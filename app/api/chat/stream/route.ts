@@ -1,5 +1,5 @@
-import { createMockReply } from "@/src/lib/chat/mock-engine";
 import { generateChatReply } from "@/src/lib/chat";
+import { createMockReply } from "@/src/lib/chat/mock-engine";
 import { getCurrentSession, startSession } from "@/src/lib/session/session-service";
 import type { ChatMessage } from "@/src/lib/types";
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
         reason =
           errorCode === "insufficient_quota" || errorStatus === "429"
-            ? "OpenAI project quota is unavailable"
+            ? "AI provider quota is unavailable"
             : error instanceof Error
               ? error.message
               : "Unknown AI provider error";
@@ -43,9 +43,7 @@ export async function POST(request: Request) {
       }
 
       for (const piece of chunkText(text)) {
-        controller.enqueue(
-          encoder.encode(`${JSON.stringify({ type: "chunk", text: piece })}\n`),
-        );
+        controller.enqueue(encoder.encode(`${JSON.stringify({ type: "chunk", text: piece })}\n`));
         await new Promise((resolve) => setTimeout(resolve, 35));
       }
 

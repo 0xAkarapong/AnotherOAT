@@ -198,8 +198,8 @@ export function useChatSession({
 
           if (event.type === "done" && event.mode === "mock-fallback") {
             setProviderNotice(
-              event.reason === "OpenAI project quota is unavailable"
-                ? "OpenAI key ติดต่อได้ แต่ project นี้ยังไม่มี quota เพียงพอ จึงใช้คำตอบสำรองชั่วคราว"
+              event.reason === "AI provider quota is unavailable"
+                ? "คีย์เชื่อมต่อได้ แต่โปรเจกต์ของ AI provider ยังไม่มี quota เพียงพอ จึงใช้คำตอบสำรองชั่วคราว"
                 : "ระบบสลับไปใช้คำตอบสำรอง เพราะบริการ AI ภายนอกยังไม่พร้อม",
             );
           }

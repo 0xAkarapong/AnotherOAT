@@ -23,7 +23,12 @@ function progress(
 }
 
 function hasCustomOptions(options?: SessionStartOptions) {
-  return Boolean(options?.maxItems || options?.rangeDays);
+  return Boolean(
+    options?.maxItems ||
+      options?.rangeDays ||
+      options?.startYear ||
+      options?.endYear,
+  );
 }
 
 export async function startSession(

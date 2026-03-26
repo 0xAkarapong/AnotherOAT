@@ -1,26 +1,28 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { RefreshCcw } from "lucide-react";
 
 import { AnalysisDashboard } from "@/components/analysis-dashboard";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
+import { siteConfig } from "@/src/config/site";
 import type { SessionStartOptions, SessionState } from "@/src/lib/types";
-
-const RANGE_OPTIONS = [
-  { label: "30 วัน", value: 30 },
-  { label: "90 วัน", value: 90 },
-  { label: "180 วัน", value: 180 },
-  { label: "365 วัน", value: 365 },
-  { label: "ทั้งหมด", value: 0 },
-];
 
 const SIZE_OPTIONS = [10, 20, 40, 60, 80];
 
 export function AnalysisDashboardClient({ initialSession }: { initialSession: SessionState }) {
+  const currentYear = new Date().getUTCFullYear();
+  const birthYear = new Date(siteConfig.birthDate).getUTCFullYear();
+  const yearOptions = useMemo(
+    () =>
+      Array.from({ length: currentYear - birthYear + 1 }, (_, index) => currentYear - index),
+    [birthYear, currentYear],
+  );
+
   const [session, setSession] = useState(initialSession);
-  const [rangeDays, setRangeDays] = useState<number>(365);
+  const [startYear, setStartYear] = useState<number>(Math.max(birthYear, currentYear - 6));
+  const [endYear, setEndYear] = useState<number>(currentYear);
   const [maxItems, setMaxItems] = useState<number>(40);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,8 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
       setError(null);
       try {
         const options: SessionStartOptions = {
-          rangeDays: rangeDays === 0 ? null : rangeDays,
+          startYear: Math.min(startYear, endYear),
+          endYear: Math.max(startYear, endYear),
           maxItems,
         };
 
@@ -59,17 +62,32 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
     <div className="space-y-5">
       <Panel className="p-5 sm:p-6">
         <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <label className="space-y-2 text-sm text-white/68">
-              <span>เลือกช่วงเวลา</span>
+              <span>เลือกปีเริ่มต้น</span>
               <select
                 className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
-                onChange={(event) => setRangeDays(Number(event.target.value))}
-                value={rangeDays}
+                onChange={(event) => setStartYear(Number(event.target.value))}
+                value={startYear}
               >
-                {RANGE_OPTIONS.map((option) => (
-                  <option className="bg-slate-900" key={option.value} value={option.value}>
-                    {option.label}
+                {yearOptions.map((year) => (
+                  <option className="bg-slate-900" key={year} value={year}>
+                    {year} · อายุ {year - birthYear}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="space-y-2 text-sm text-white/68">
+              <span>เลือกปีสิ้นสุด</span>
+              <select
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
+                onChange={(event) => setEndYear(Number(event.target.value))}
+                value={endYear}
+              >
+                {yearOptions.map((year) => (
+                  <option className="bg-slate-900" key={year} value={year}>
+                    {year} · อายุ {year - birthYear}
                   </option>
                 ))}
               </select>
@@ -100,7 +118,8 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
         </div>
 
         <p className="mt-4 text-xs leading-6 text-white/45">
-          ค่านี้จะถูกส่งไปที่ session-start route จริง เพื่อคัดกรองช่วงเวลาและจำกัดจำนวนรายการก่อนวิเคราะห์
+          ค่านี้จะถูกส่งไปที่ session-start route จริง เพื่อคัดกรองข้อมูลตามปีที่เลือก แล้วแสดง
+          timeline ในหน่วยอายุของโอต ปราโมทย
         </p>
         {error ? <p className="mt-3 text-sm text-amber-200">{error}</p> : null}
       </Panel>

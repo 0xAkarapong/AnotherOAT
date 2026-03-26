@@ -21,18 +21,18 @@ export function ChatComposer({
   isStreaming?: boolean;
 }) {
   return (
-    <Panel className="sticky bottom-0 p-3 sm:p-4">
-      <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-3 dark:bg-black/25">
+    <Panel className="sticky bottom-0 z-10 border-white/10 bg-[rgba(14,16,24,0.82)] p-3 backdrop-blur-xl sm:p-4">
+      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 dark:bg-black/30">
         <textarea
-          className="min-h-28 w-full resize-none bg-transparent text-[15px] leading-7 text-white outline-none placeholder:text-white/35"
+          className="min-h-24 w-full resize-none bg-transparent text-[15px] leading-7 text-white outline-none placeholder:text-white/35"
           disabled={disabled}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="พิมพ์สิ่งที่อยากถาม เช่น วันนี้ผมควรยอมรับอะไร และควรวางอะไรลงบ้าง"
+          placeholder="พิมพ์สิ่งที่อยากคุย เช่น วันนี้ผมควรยอมรับอะไร และควรวางอะไรลงบ้าง"
           value={value}
         />
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs leading-6 text-white/42">
-            คำตอบจะค่อย ๆ ปรากฏแบบสตรีม พร้อมสถานะ timeout, retry, และ fallback
+            คำตอบจะค่อย ๆ ปรากฏแบบสตรีม พร้อมสถานะ timeout, retry และ fallback
           </p>
           <div className="flex flex-wrap gap-2">
             {onRetry ? (
