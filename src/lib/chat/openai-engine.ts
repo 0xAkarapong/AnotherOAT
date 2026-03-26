@@ -85,7 +85,7 @@ ${personaConfig.styleExamples.map((item) => `- ${item}`).join("\n")}
       max_output_tokens: 420,
     },
     {
-      timeout: 20000,
+      timeout: 8000,
     },
   );
 
