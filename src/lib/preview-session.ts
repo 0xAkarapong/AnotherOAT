@@ -6,6 +6,7 @@ export function getPreviewSession(): SessionState {
   return {
     mentions,
     mindState: deriveMindState(mentions),
+    personaContext: "",
     fetchedAt: new Date().toISOString(),
     source: "landing-preview",
   };

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const m = require\\(''./src/mock/mentions.json''\\); const years = [...new Set\\(m.map\\(x => new Date\\(x.publishedAt\\).getUTCFullYear\\(\\)\\)\\)].sort\\(\\); console.log\\(''Years in mock data:'', years\\); console.log\\(''Total items:'', m.length\\);\")",
+      "WebSearch",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

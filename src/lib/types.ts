@@ -23,6 +23,7 @@ export type MindState = {
 export type SessionState = {
   mentions: MentionItem[];
   mindState: MindState;
+  personaContext: string;
   fetchedAt: string;
   source: string;
 };
@@ -43,6 +44,7 @@ export type SessionProgressEvent = {
     | "fetched"
     | "deduplicated"
     | "analyzed"
+    | "persona-analyzing"
     | "cached"
     | "completed"
     | "fallback"

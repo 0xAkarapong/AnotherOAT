@@ -14,6 +14,7 @@ export const env = {
   openAiApiKey: readEnv("OPENAI_API_KEY"),
   openRouterApiKey: readEnv("OPENROUTER_API_KEY"),
   openRouterModel: readEnv("OPENROUTER_MODEL") ?? "openai/gpt-4.1-mini",
+  claudeApiKey: readEnv("CLAUDE_API_KEY"),
   mentionsApiKey: readEnv("MENTIONS_API_KEY"),
   xBearerToken: readEnv("X_BEARER_TOKEN"),
 } as const;
@@ -23,6 +24,6 @@ export const featureFlags = {
     Boolean(env.supabaseUrl) &&
     Boolean(env.supabaseAnonKey) &&
     Boolean(env.supabaseServiceRoleKey),
-  hasAiProvider: Boolean(env.openRouterApiKey || env.openAiApiKey),
+  hasAiProvider: Boolean(env.openRouterApiKey || env.openAiApiKey || env.claudeApiKey),
   hasXProvider: Boolean(env.xBearerToken),
 } as const;
