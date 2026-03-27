@@ -11,13 +11,13 @@ export default async function TimelinePage() {
 
   return (
     <AppShell eyebrow="เส้นเวลาการทบทวนตัวเอง">
-      <div className="space-y-5 lg:space-y-6">
-        <MotionWrapper className="rounded-4xl border border-white/15 bg-white/8 p-5 shadow-glow backdrop-blur-xl sm:p-8">
-          <p className="text-sm uppercase tracking-[0.22em] text-white/50">ไทม์ไลน์</p>
-          <h1 className="mt-2 font-serif text-3xl text-white sm:text-4xl">
+      <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+        <MotionWrapper className="rounded-2xl border border-white/15 bg-white/8 p-4 shadow-glow backdrop-blur-xl sm:rounded-3xl sm:p-6 md:p-8">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-xs">ไทม์ไลน์</p>
+          <h1 className="mt-1.5 font-serif text-2xl text-white sm:text-3xl md:text-4xl">
             อะไรที่เจ็บ อะไรที่เปลี่ยน และวันนี้ฉันเชื่ออะไร
           </h1>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <TimelineCard
               entries={session.mindState.unfairAttacks}
               title="สิ่งที่ทำให้เจ็บ"
@@ -50,13 +50,13 @@ function TimelineCard({
   entries: readonly string[];
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-white/10 bg-black/10 p-5 dark:bg-black/20">
-      <p className="text-xs uppercase tracking-[0.22em] text-white/45">{title}</p>
-      <p className="mt-3 text-sm leading-7 text-white/62">{tone}</p>
-      <div className="mt-5 space-y-2">
+    <div className="rounded-xl border border-white/10 bg-black/10 p-4 dark:bg-black/20 sm:rounded-[1.75rem] sm:p-5">
+      <p className="text-[10px] uppercase tracking-[0.22em] text-white/45 sm:text-xs">{title}</p>
+      <p className="mt-2 text-xs leading-6 text-white/62 sm:text-sm">{tone}</p>
+      <div className="mt-4 space-y-1.5 sm:space-y-2">
         {entries.map((entry) => (
           <div
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/78"
+            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/78 sm:rounded-2xl sm:px-4 sm:py-3"
             key={entry}
           >
             {entry}

@@ -59,14 +59,14 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
   }
 
   return (
-    <div className="space-y-5">
-      <Panel className="p-5 sm:p-6">
+    <div className="space-y-4 sm:space-y-5">
+      <Panel className="p-4 sm:p-5 md:p-6">
         <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <label className="space-y-2 text-sm text-white/68">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="space-y-1.5 text-xs text-white/68 sm:space-y-2 sm:text-sm">
               <span>เลือกปีเริ่มต้น</span>
               <select
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-hidden"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-white outline-hidden sm:rounded-2xl sm:px-4 sm:py-3"
                 onChange={(event) => setStartYear(Number(event.target.value))}
                 value={startYear}
               >
@@ -78,10 +78,10 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
               </select>
             </label>
 
-            <label className="space-y-2 text-sm text-white/68">
+            <label className="space-y-1.5 text-xs text-white/68 sm:space-y-2 sm:text-sm">
               <span>เลือกปีสิ้นสุด</span>
               <select
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-hidden"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-white outline-hidden sm:rounded-2xl sm:px-4 sm:py-3"
                 onChange={(event) => setEndYear(Number(event.target.value))}
                 value={endYear}
               >
@@ -93,10 +93,10 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
               </select>
             </label>
 
-            <label className="space-y-2 text-sm text-white/68">
+            <label className="space-y-1.5 text-xs text-white/68 sm:space-y-2 sm:text-sm">
               <span>เลือกขนาดข้อมูลสูงสุด</span>
               <select
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-hidden"
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-white outline-hidden sm:rounded-2xl sm:px-4 sm:py-3"
                 onChange={(event) => setMaxItems(Number(event.target.value))}
                 value={maxItems}
               >
@@ -109,19 +109,19 @@ export function AnalysisDashboardClient({ initialSession }: { initialSession: Se
             </label>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Button onClick={refreshAnalysis} type="button" variant="ghost">
-              <RefreshCcw className="mr-2 h-4 w-4" />
-              {isPending ? "กำลังดึงข้อมูล..." : "ดึง dataset ใหม่"}
+              <RefreshCcw className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">{isPending ? "กำลังดึงข้อมูล..." : "ดึง dataset ใหม่"}</span>
             </Button>
           </div>
         </div>
 
-        <p className="mt-4 text-xs leading-6 text-white/45">
+        <p className="mt-3 text-[10px] leading-5 text-white/45 sm:mt-4 sm:text-xs sm:leading-6">
           ค่านี้จะถูกส่งไปที่ session-start route จริง เพื่อคัดกรองข้อมูลตามปีที่เลือก แล้วแสดง
           timeline ในหน่วยอายุของโอต ปราโมทย
         </p>
-        {error ? <p className="mt-3 text-sm text-amber-200">{error}</p> : null}
+        {error ? <p className="mt-2 text-xs text-amber-200 sm:mt-3 sm:text-sm">{error}</p> : null}
       </Panel>
 
       <AnalysisDashboard session={session} />

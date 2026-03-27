@@ -54,18 +54,18 @@ export function ClientChat({ initialMessages, initialSession }: ClientChatProps)
 
   const sidePanel = (
     <>
-      <Panel className="shrink-0 p-4 sm:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-white/45">Session tools</p>
-            <h2 className="mt-1 text-base sm:text-lg text-white">การใช้งานและการบันทึก</h2>
-            <p className="mt-2 text-sm leading-6 text-white/60">
+      <Panel className="shrink-0 p-3 sm:p-4 md:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/45 sm:text-xs">Session tools</p>
+            <h2 className="mt-1 text-sm text-white sm:text-base md:text-lg">การใช้งานและการบันทึก</h2>
+            <p className="mt-1.5 text-xs leading-5 text-white/60 sm:mt-2 sm:text-sm sm:leading-6">
               ข้อความจะถูกเก็บในเบราว์เซอร์เครื่องนี้ เพื่อให้กลับมาคุยต่อได้อย่างปลอดภัย
             </p>
           </div>
-          <Button className="w-full sm:w-auto shrink-0" onClick={exportReflection} type="button" variant="ghost">
-            <Download className="mr-2 h-4 w-4" />
-            ส่งออก
+          <Button className="w-full sm:w-auto shrink-0 min-h-[44px]" onClick={exportReflection} type="button" variant="ghost">
+            <Download className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="text-xs sm:text-sm">ส่งออก</span>
           </Button>
         </div>
       </Panel>
@@ -75,14 +75,14 @@ export function ClientChat({ initialMessages, initialSession }: ClientChatProps)
   );
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col space-y-3 overflow-hidden sm:space-y-4">
-      <div className="shrink-0 space-y-3 sm:space-y-4">
+    <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden sm:gap-4 lg:gap-5">
+      <div className="shrink-0 space-y-2 sm:space-y-3 md:space-y-4">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <ChatHeader isRefreshing={isRefreshing} onRefresh={refreshSession} session={session} />
           </div>
           <Button
-            className="lg:hidden shrink-0"
+            className="lg:hidden shrink-0 min-w-[44px] min-h-[44px]"
             onClick={() => setSidebarOpen(true)}
             type="button"
             variant="ghost"
@@ -94,8 +94,8 @@ export function ClientChat({ initialMessages, initialSession }: ClientChatProps)
         <ChatStatusBanner state={banner} />
       </div>
 
-      <div className="grid min-h-0 flex-1 gap-3 overflow-hidden sm:gap-5 lg:grid-cols-[minmax(0,1.15fr)_320px] xl:grid-cols-[minmax(0,1.35fr)_360px]">
-        <div className="flex min-h-0 flex-col gap-4 overflow-hidden">
+      <div className="grid min-h-0 flex-1 gap-3 overflow-hidden sm:gap-4 lg:gap-5 lg:grid-cols-[minmax(0,1.15fr)_320px] xl:grid-cols-[minmax(0,1.35fr)_360px]">
+        <div className="flex min-h-0 flex-col gap-3 overflow-hidden sm:gap-4">
           <ChatThread
             messages={messages}
             onPromptSelect={(prompt) => void sendMessage(prompt)}
@@ -113,7 +113,7 @@ export function ClientChat({ initialMessages, initialSession }: ClientChatProps)
           </div>
         </div>
 
-        <div className="hidden min-h-0 flex-col gap-4 overflow-y-auto lg:flex">
+        <div className="hidden min-h-0 flex-col gap-3 overflow-y-auto sm:gap-4 lg:flex">
           {sidePanel}
         </div>
       </div>
@@ -125,15 +125,15 @@ export function ClientChat({ initialMessages, initialSession }: ClientChatProps)
             onClick={() => setSidebarOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed bottom-0 right-0 top-0 z-50 w-[300px] max-w-[85vw] animate-in slide-in-from-right duration-300 lg:hidden">
-            <div className="flex h-full flex-col bg-[#0a0a10] border-l border-white/10">
-              <div className="flex items-center justify-between border-b border-white/10 p-4">
-                <h2 className="text-lg text-white">เมนู</h2>
-                <Button onClick={() => setSidebarOpen(false)} type="button" variant="ghost">
+          <div className="fixed bottom-0 left-0 right-0 top-0 z-50 w-full max-w-none animate-in slide-in-from-bottom duration-300 lg:hidden">
+            <div className="flex h-full flex-col bg-[#0a0a10] border-t border-white/10 lg:border-l lg:border-t-0">
+              <div className="flex items-center justify-between border-b border-white/10 p-3 sm:p-4">
+                <h2 className="text-base text-white sm:text-lg">เมนู</h2>
+                <Button onClick={() => setSidebarOpen(false)} type="button" variant="ghost" className="min-w-[44px] min-h-[44px]" aria-label="Close menu">
                   ✕
                 </Button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4">{sidePanel}</div>
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4">{sidePanel}</div>
             </div>
           </div>
         </>

@@ -10,11 +10,11 @@ export default async function SettingsPage() {
 
   return (
     <AppShell eyebrow="หน้าดูค่าตั้งต้นรวมศูนย์">
-      <div className="lg:space-y-6">
-        <MotionWrapper className="rounded-4xl border border-white/15 bg-white/8 p-5 shadow-glow backdrop-blur-xl sm:p-8">
-          <p className="text-sm uppercase tracking-[0.22em] text-white/50">ตั้งค่า</p>
-          <h1 className="mt-2 font-serif text-3xl text-white sm:text-4xl">แก้ค่าหลักของแอปได้จากไฟล์ config โดยตรง</h1>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+        <MotionWrapper className="rounded-2xl border border-white/15 bg-white/8 p-4 shadow-glow backdrop-blur-xl sm:rounded-3xl sm:p-6 md:p-8">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-xs">ตั้งค่า</p>
+          <h1 className="mt-1.5 font-serif text-2xl text-white sm:text-3xl md:text-4xl">แก้ค่าหลักของแอปได้จากไฟล์ config โดยตรง</h1>
+          <div className="mt-6 grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <SettingsCard
               title="Persona Markdown"
               body={personaProfile || "(empty persona file)"}
@@ -52,10 +52,10 @@ function SettingsCard({
   footer: string;
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-white/10 bg-black/10 p-5 dark:bg-black/20">
-      <p className="text-xs uppercase tracking-[0.22em] text-white/45">{title}</p>
-      <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-7 text-white/72">{body}</pre>
-      <p className="mt-4 text-xs text-white/45">{footer}</p>
+    <div className="rounded-xl border border-white/10 bg-black/10 p-4 dark:bg-black/20 sm:rounded-[1.75rem] sm:p-5">
+      <p className="text-[10px] uppercase tracking-[0.22em] text-white/45 sm:text-xs">{title}</p>
+      <pre className="mt-2.5 whitespace-pre-wrap font-sans text-xs leading-5 text-white/72 sm:text-sm sm:leading-7">{body}</pre>
+      <p className="mt-2.5 text-[10px] text-white/45 sm:text-xs">{footer}</p>
     </div>
   );
 }

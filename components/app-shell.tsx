@@ -64,7 +64,7 @@ export function AppShell({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-90"
+        className="pointer-events-none absolute inset-0 opacity-60 md:opacity-90"
         style={{
           background:
             "radial-gradient(circle at top, rgba(190,150,255,0.22), transparent 28%), radial-gradient(circle at 80% 20%, rgba(118,69,255,0.18), transparent 20%), linear-gradient(180deg, rgba(18,14,29,0.98), rgba(10,10,16,1))",
@@ -72,46 +72,46 @@ export function AppShell({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-20 mix-blend-screen dark:opacity-25"
+        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-10 md:opacity-20 mix-blend-screen dark:md:opacity-25"
         style={{ backgroundImage: `url(${resolvedAssets.heroNoise})` }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-contain bg-top-right bg-no-repeat opacity-30"
+        className="pointer-events-none absolute inset-0 bg-contain bg-top-right bg-no-repeat opacity-20 md:opacity-30"
         style={{ backgroundImage: `url(${resolvedAssets.ambientGlow})` }}
       />
 
       <div
-        className={`relative mx-auto flex w-full max-w-7xl flex-col px-3 sm:px-6 lg:px-10 ${viewportLocked ? "h-full" : "min-h-dvh pb-12"}`}
+        className={`relative mx-auto flex w-full max-w-7xl flex-col px-3 sm:px-6 lg:px-8 ${viewportLocked ? "h-full" : "min-h-dvh pb-12"}`}
       >
         <header
-          className={`sticky top-0 z-40 -mx-3 px-3 transition-all duration-300 md:relative md:mx-0 md:px-0 `}
+          className={`sticky top-0 z-40 -mx-3 px-3 transition-all duration-300 md:relative md:mx-0 md:px-0`}
         >
           <div className="flex items-center justify-between border-b border-white/5 py-3 md:border-none md:py-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <img
                 alt={`${siteConfig.name} logo`}
-                className="h-9 w-9 shrink-0 rounded-full border border-white/15 bg-white/10 object-cover p-1.5 sm:h-10 sm:w-10 sm:p-2"
+                className="h-8 w-8 shrink-0 rounded-full border border-white/15 bg-white/10 object-cover p-1 sm:h-9 sm:w-9 sm:p-1.5 md:p-2"
                 src={resolvedAssets.logo}
               />
               <div className="min-w-0">
-                <p className="truncate font-serif text-base tracking-[0.08em] text-white/85 sm:text-lg">
+                <p className="truncate font-serif text-sm tracking-[0.08em] text-white/85 sm:text-base md:text-lg">
                   another oat
                 </p>
                 {eyebrow ? (
-                  <div className="line-clamp-1 text-xs text-white/50 sm:text-sm">{eyebrow}</div>
+                  <div className="line-clamp-1 text-[10px] text-white/50 sm:text-xs md:text-sm">{eyebrow}</div>
                 ) : null}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <nav className="hidden items-center gap-1 md:flex">
                 {NAV_ITEMS.map((item) => {
                   const isActive = pathname === item.href;
                   const Icon = item.icon;
                   return (
                     <Link
-                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition ${
+                      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs transition md:px-3 md:text-sm ${
                         isActive
                           ? "bg-white/10 text-white"
                           : "text-white/50 hover:bg-white/5 hover:text-white/70"
@@ -164,7 +164,7 @@ export function AppShell({
           )}
         </header>
 
-        <main className="flex-1 py-4 md:py-6">{children}</main>
+        <main className="flex-1 py-3 md:py-5 lg:py-6">{children}</main>
       </div>
     </div>
   );
