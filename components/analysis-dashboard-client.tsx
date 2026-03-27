@@ -14,14 +14,15 @@ const SIZE_OPTIONS = [10, 20, 40, 60, 80];
 export function AnalysisDashboardClient({ initialSession }: { initialSession: SessionState }) {
   const currentYear = new Date().getUTCFullYear();
   const birthYear = new Date(siteConfig.birthDate).getUTCFullYear();
+  const minYear = birthYear + 22;
   const yearOptions = useMemo(
     () =>
-      Array.from({ length: currentYear - birthYear + 1 }, (_, index) => currentYear - index),
-    [birthYear, currentYear],
+      Array.from({ length: currentYear - minYear + 1 }, (_, index) => currentYear - index),
+    [minYear, currentYear],
   );
 
   const [session, setSession] = useState(initialSession);
-  const [startYear, setStartYear] = useState<number>(Math.max(birthYear, currentYear - 6));
+  const [startYear, setStartYear] = useState<number>(Math.max(minYear, currentYear - 6));
   const [endYear, setEndYear] = useState<number>(currentYear);
   const [maxItems, setMaxItems] = useState<number>(40);
   const [isPending, startTransition] = useTransition();

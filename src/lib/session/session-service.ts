@@ -1,7 +1,8 @@
-import mentions from "@/src/mock/mentions.json";
+import mentions from "@/data/mentions.json";
 
 import { siteConfig } from "@/src/config/site";
 import { sourcesConfig } from "@/src/config/sources";
+import { analyzePersonaContext } from "@/src/lib/chat/persona-analyzer";
 import { fetchSessionMentions } from "@/src/lib/mentions";
 import { deriveMindState } from "@/src/lib/mind-state";
 import { getMemoryStore } from "@/src/lib/stores/memory-store";
@@ -55,6 +56,20 @@ export async function startSession(
     return existing;
   }
 
+  function applyFallback(message: string, detail?: string) {
+    const { startYear, endYear, maxItems: limit } = options ?? {};
+    const filtered = mentions.filter((item) => {
+      const year = new Date(item.publishedAt).getUTCFullYear();
+      if (Number.isNaN(year)) return false;
+      if (startYear && year < startYear) return false;
+      if (endYear && year > endYear) return false;
+      return true;
+    });
+    const result = filtered.slice(0, limit ?? mentions.length);
+    emit?.(progress("fallback", message, { count: result.length, detail }));
+    return result;
+  }
+
   let mentionItems = mentions;
   if (sourcesConfig.sessionStartIngestionEnabled) {
     try {
@@ -63,18 +78,12 @@ export async function startSession(
         options,
       );
       if (mentionItems.length === 0) {
-        mentionItems = mentions.slice(0, options?.maxItems ?? mentions.length);
-        emit?.(
-          progress("fallback", "ไม่พบผลลัพธ์จริงที่ใช้ได้ จึงใช้ข้อมูลจำลองสำรอง", {
-            count: mentionItems.length,
-          }),
-        );
+        mentionItems = applyFallback("ไม่พบผลลัพธ์จริงที่ใช้ได้ จึงใช้ข้อมูลจำลองสำรอง");
       }
     } catch (error) {
-      emit?.(
-        progress("fallback", "ดึงข้อมูลจริงไม่สำเร็จ จึงสลับไปใช้ข้อมูลจำลอง", {
-          detail: error instanceof Error ? error.message : "Unknown provider error",
-        }),
+      mentionItems = applyFallback(
+        "ดึงข้อมูลจริงไม่สำเร็จ จึงสลับไปใช้ข้อมูลจำลอง",
+        error instanceof Error ? error.message : "Unknown provider error",
       );
     }
   }
@@ -85,16 +94,20 @@ export async function startSession(
     }),
   );
 
+  emit?.(progress("analyzed", "สรุปสภาพใจจากข้อมูลที่ดึงมาเสร็จแล้ว"));
+
+  emit?.(progress("persona-analyzing", "กำลังวิเคราะห์บริบทของโอ๊ตในช่วงเวลานี้..."));
+  const personaContext = await analyzePersonaContext(mentionItems);
+
   const session: SessionState = {
     mentions: mentionItems,
     mindState: deriveMindState(mentionItems),
+    personaContext,
     fetchedAt: new Date().toISOString(),
     source: "session-start",
   };
 
-  emit?.(progress("analyzed", "สรุปสภาพใจจากข้อมูลที่ดึงมาเสร็จแล้ว"));
-
-  if (!hasCustomOptions(options)) {
+  if (!hasCustomOptions(options) || forceRefresh) {
     await store.setLatest(session);
   }
 

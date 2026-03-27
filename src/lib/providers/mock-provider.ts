@@ -1,4 +1,4 @@
-import mentions from "@/src/mock/mentions.json";
+import mentions from "@/data/mentions.json";
 import type { MentionProvider } from "@/src/lib/providers/types";
 
 export const mockMentionProvider: MentionProvider = {

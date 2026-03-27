@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   let mode: "openai" | "mock-fallback" = "openai";
 
   try {
-    reply = await generateChatReply(body.input, session.mindState, body.history ?? []);
+    reply = await generateChatReply(body.input, session.mindState, body.history ?? [], session.personaContext);
   } catch (error) {
     reply = `${await createMockReply(body.input, session.mindState, body.history ?? [])}\n\n[หมายเหตุ: ตอนนี้การเชื่อมต่อ AI ภายนอกมีปัญหา จึงสลับมาใช้คำตอบสำรองชั่วคราว]`;
     mode = "mock-fallback";

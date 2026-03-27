@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       let reason: string | null = null;
 
       try {
-        text = await generateChatReply(body.input, session.mindState, body.history ?? []);
+        text = await generateChatReply(body.input, session.mindState, body.history ?? [], session.personaContext);
       } catch (error) {
         console.error("api/chat/stream error", error);
         const errorCode =

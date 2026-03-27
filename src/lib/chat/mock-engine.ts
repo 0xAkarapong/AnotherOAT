@@ -1,10 +1,9 @@
-import { personaFallbackLine, getPersonaDossier } from "@/src/lib/chat/persona-profile";
 import type { ChatMessage, MindState } from "@/src/lib/types";
 
 function joinThemes(values: string[]) {
-  if (values.length === 0) return "เรื่องที่คนยังรีบตัดสินเกินไป";
+  if (values.length === 0) return "เรื่องเดิมๆ";
   if (values.length === 1) return values[0];
-  return `${values.slice(0, -1).join(" , ")} และ ${values.at(-1)}`;
+  return `${values.slice(0, -1).join(", ")} และ ${values.at(-1)}`;
 }
 
 export async function createMockReply(
@@ -12,45 +11,47 @@ export async function createMockReply(
   mindState: MindState,
   history: ChatMessage[],
 ) {
-  const dossier = await getPersonaDossier();
-  const personaLine = personaFallbackLine(dossier);
   const lower = input.toLowerCase();
   const fairThemes = joinThemes(mindState.fairCriticism);
   const unfairThemes = joinThemes(mindState.unfairAttacks);
   const rumorThemes = joinThemes(mindState.rumors);
   const growthThemes = joinThemes(mindState.growthSignals);
-  const recentAssistantLine = [...history].reverse().find((item) => item.role === "assistant");
-  const seriousMode = /(sad|hurt|stress|serious|เศร้า|เครียด|เสียใจ|เจ็บ|ท้อ|เหนื่อย)/.test(lower);
-
-  if (lower.includes("fair") || lower.includes("ยุติธรรม")) {
-    return `${seriousMode ? "" : "เออ "}ถ้าพูดกันตรง ๆ มันก็มีส่วนที่แฟร์จริงในเรื่อง ${fairThemes} แต่ส่วนแฟร์ก็ควรถูกมองแบบพอดี ไม่ใช่ขยายจนกลายเป็นตัดสินทั้งตัวคน`;
+  
+  const isSerious = /(เศร้า|เครียด|เสียใจ|เจ็บ|ท้อ|เหนื่อย|หนัก|ไม่ไหว|แย่)/.test(lower);
+  const isQuestion = /(ไหม|จริงหรอ|ยังไง|หรอ|เหรอ|ป่ะ)/.test(lower);
+  
+  // Greeting or general check-in
+  if (lower.length < 10 && !isQuestion) {
+    if (isSerious) {
+      return "เฮ้ย เป็นไรป่าว ดูทรงแล้วน่าจะหนักอยู่ มีอะไรระบายมาได้เลย พี่ฟังอยู่";
+    }
+    return "ว่าไง มีอะไรอยากระบาย หรืออยากให้พี่ช่วยดูเรื่องไหนเป็นพิเศษไหม วันนี้พร้อมฟังเต็มที่";
   }
 
-  if (
-    lower.includes("rumor") ||
-    lower.includes("true") ||
-    lower.includes("ข่าวลือ") ||
-    lower.includes("จริงไหม") ||
-    lower.includes("จริงหรือ")
-  ) {
-    return `เรื่องแบบนี้ต้องเบรกก่อน เพราะรอบมันเต็มไปด้วย ${rumorThemes} ถ้าข้อมูลยังไม่ครบก็ยังไม่ควรพูดเหมือนมันเป็นความจริง อันนี้ต้องตรงไว้ก่อน`;
+  // Handling specific topics more naturally
+  if (lower.includes("ยุติธรรม") || lower.includes("จริงไหม") || lower.includes("แฟร์")) {
+    return `ถ้าให้พูดตรงๆ แบบไม่เข้าข้างนะ เรื่อง ${fairThemes} มันก็มีส่วนที่คนเค้าพูดกันถูกแหละ แต่พี่ว่าเราอย่าเพิ่งไปเหมาเข่งว่าเราผิดไปหมด แยกแยะเป็นเรื่องๆ ไปดีกว่า`;
   }
 
-  if (
-    lower.includes("grow") ||
-    lower.includes("change") ||
-    lower.includes("เติบโต") ||
-    lower.includes("เปลี่ยน") ||
-    lower.includes("เปลี่ยนไป")
-  ) {
-    return `ถ้าจะมองแบบไม่หลอกตัวเอง การเปลี่ยนมันอยู่ตรง ${growthThemes} คือไม่ได้แปลว่าแผลหายหมด แต่แปลว่าวิธีฟัง วิธีคิด วิธีรับมือมันโตขึ้นจริง`;
+  if (lower.includes("ข่าวลือ") || lower.includes("คนพูดถึง")) {
+    return `ไอ้พวก ${rumorThemes} นี่ตัวดีเลย อย่าไปให้ค่ามันมาก ส่วนใหญ่ก็เดากันไปเรื่อย ถ้าเรามัวแต่ไปฟังเสียงพวกนี้ เราเองนั่นแหละที่จะประสาทแดก เอาเวลามาโฟกัสที่ตัวเราดีกว่า`;
   }
 
-  if (seriousMode) {
-    return `โอเค เรื่องนี้เอาจริงนะ ความรู้สึกมันคงหนักเพราะมันไปแตะ ${unfairThemes} หรือบางอย่างที่ยังค้างอยู่ แต่ค่อย ๆ แยกก่อนว่าอะไรคือความจริง อะไรคือเสียงที่พาเราเจ็บเกินจำเป็น แบบนั้นจะตอบตัวเองได้ชัดกว่า`;
+  if (lower.includes("เติบโต") || lower.includes("เปลี่ยน")) {
+    return `พี่เห็นเราพยายามอยู่นะ เรื่อง ${growthThemes} มันชัดขึ้นเยอะเลย การที่เราเริ่มคิดได้แบบนี้ พี่ว่ามันคือการเริ่มต้นที่ดีมากแล้วล่ะ ค่อยๆ เป็นค่อยๆ ไปนะ`;
   }
 
-  return `${personaLine} ตอนนี้ภาพรวมมันมีทั้ง ${fairThemes} กับ ${unfairThemes} ปนกันอยู่ ${
-    recentAssistantLine ? `แล้วผมยังต่อเนื่องจากที่คุยเมื่อกี้เรื่อง "${recentAssistantLine.content}" ได้ด้วย ` : ""
-  }ถ้าจะคุยต่อ เอาประเด็นตรง ๆ มาได้เลย เดี๋ยวค่อยแยกให้ว่าอันไหนควรฟัง อันไหนควรวาง`;
+  if (isSerious) {
+    return `เข้าใจเลยว่ามันยาก โดยเฉพาะตอนที่ต้องเจอเรื่อง ${unfairThemes} แบบนี้ บางทีความใจร้ายของคนมันก็เกินไปจริงๆ แต่เชื่อพี่นะ วันนึงเราจะข้ามมันไปได้`;
+  }
+
+  // Default fallback that feels like a real continuation
+  const fallbacks = [
+    `ฟังดูแล้วเข้าใจเลยนะ พี่ว่าเรื่อง ${mindState.summary.toLowerCase()} มันยังกวนใจเราอยู่ใช่ไหม ลองเล่าเจาะจงหน่อยดิว่าตรงไหนที่ทำให้เรารู้สึกติดขัดที่สุด`,
+    `เออ พี่ฟังอยู่ เรื่อง ${fairThemes} กับ ${unfairThemes} มันปนๆ กันจนนัวไปหมดเลยเนอะ แล้วตอนนี้ใจเราเป็นไงบ้างล่ะไหวไหม`,
+    `เอาจริงๆ พี่ว่าเราเก่งนะที่ผ่านเรื่องพวกนี้มาได้ โดยเฉพาะเรื่อง ${growthThemes} เนี่ย ลองดูดิว่ามีอะไรที่เราอยากปรับเพิ่มอีกไหม พี่พร้อมซัพพอร์ต`,
+    "เล่าต่อดิ พี่อยากฟังมุมมองเรามากกว่านี้ ว่าเรื่องที่เกิดขึ้นมันกระทบใจเราท่าไหน"
+  ];
+
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
